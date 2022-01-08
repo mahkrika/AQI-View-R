@@ -5,6 +5,7 @@ library(plotly)
 library(gtools)
 library(stringr)
 library(scales)
+library(hms)
 
 inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
 inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE)
@@ -149,6 +150,13 @@ rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A25', 'A31', 'A34', 'A37')
        x = 'Month',
        y = 'Mean response time (sec)')
 
+# LINE - 90th centile response time per category by month
+rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A26', 'A32', 'A35', 'A38')) +
+  labs(title = '90th centile response time per category by month',
+       subtitle = str_to_title(selDataL$Org.Name),
+       x = 'Month',
+       y = '90th centile response time (sec)')
+
 # COLUMN - Number of incidents per category by month
 rendColGsub(selDataL, 'Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12')) + 
   labs(title = 'Number of incidents per category by month',
@@ -156,10 +164,17 @@ rendColGsub(selDataL, 'Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12')) 
        x = 'Month',
        y = 'Count of incidents')
 
-# COLUMN PROPORTION - Number of incidents per category by month
+# COLUMN PROPORTION - Proportion of incidents per category by month
 rendPropColGsub(selDataL, 'Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12')) + 
   labs(title = 'Number of incidents per category by month',
        subtitle = str_to_title(selDataL$Org.Name),
        x = 'Month',
        y = 'Percentage of incidents (%)')
+
+# COLUMN PROPORTION - Proportion of Face-to-Face / No Face-to-Face responses
+rendPropColGsub(selDataL, 'Month', 'Values', 'Field', c('A56', 'A17')) + 
+  labs(title = 'Proportion of Face-to-Face / No Face-to-Face responses',
+       subtitle = str_to_title(selDataL$Org.Name),
+       x = 'Month',
+       y = 'Percentage (%)')
 
