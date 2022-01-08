@@ -9,6 +9,10 @@ library(hms)
 
 inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
 inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE)
+fullOrgs <- unique(inData$Org.Code)
+fullOrgNames <- unique(inData$Org.Name)
+fullYears <- unique(inData$Year)
+fullRegions <- unique(inData$Region)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Functions
