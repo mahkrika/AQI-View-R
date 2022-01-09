@@ -10,8 +10,7 @@
 library(shiny)
 library(shinydashboard)
 
-orgs <- c("RX6", "RYA")
-year <- c("2021", "2020")
+year <- c('2021', '2020', '2019', '2018')
 manualOrgs <- c('England', 'North East and Yorkshire', 'North West', 'Midlands', 'East of England', 'London',
                 'South East', 'South West', 'EAST MIDLANDS AMBULANCE SERVICE NHS TRUST', 'EAST OF ENGLAND AMBULANCE SERVICE NHS TRUST',
                 'ISLE OF WIGHT NHS TRUST', 'LONDON AMBULANCE SERVICE NHS TRUST', 'NORTH EAST AMBULANCE SERVICE NHS FOUNDATION TRUST',
@@ -24,13 +23,10 @@ ui <- dashboardPage(
   dashboardHeader(title = "AQI View-R"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Input", tabName = "input", icon = icon("clipboard-list"),
-               textInput("urlIn", label = "URL of data:")
-               ),
-      
       menuItem("Selections", tabName = "selections", icon = icon("feather-alt"),
-               selectInput("selectOrg", "Select Organisation:", manualOrgs),
-               selectInput("selectYear", "Select Year:", year),
+               textInput("urlIn", label = "URL of data:"),
+               selectInput("menuOrg", "Select Organisation:", manualOrgs),
+               selectInput("menuYear", "Select Year:", year),
                
                div(style="display: inline-block; vertical-align:top; width: 100px;",
                    actionButton("reset", "Reset", icon("times-circle"), 

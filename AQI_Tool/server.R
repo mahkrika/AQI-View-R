@@ -13,157 +13,143 @@ library(dplyr)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   
-  #inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
-  #inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE)
-  inData <- read.csv("AmbSYS-to-Nov-2021.csv")
-  
-  df1 <- eventReactive(input$urlIn, {
-    inFile <- read.csv("AmbSYS-to-Nov-2021.csv") %>% 
-      filter(Year == 2021 & Org.Code == 'RX6')
+  ################################################################################
+  # Reset parameters with Reset button # 
+  observeEvent(input$reset, {
+    updateSelectInput(session = getDefaultReactiveDomain(), 'menuOrg', selected = 'England');
+    updateSelectInput(session = getDefaultReactiveDomain(), 'menuYear', selected = '2021');
   })
   
-  selYear <- eventReactive(input$selectYear, {
-    df <- filter(inData, Org.Code == 'RX6' & Year == input$selectYear)
+  
+  
+  #inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
+  #inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE)
+  
+  #inData <- read.csv("AmbSYS-to-Nov-2021.csv")
+  
+  inData <- eventReactive(input$submit, {
+    inLoc <- input$urlIn
+    inFile <- read.csv(inLoc)
+  })
+  
+  selOptions <- eventReactive(input$submit, {
+    df <- filter(inData(), Org.Name == input$menuOrg & Year == input$menuYear)
   })
   
    output$testTabCnts <- renderTable({
-     selYear()
+     selOptions()
    })
-  
-# allOrgs <- reactive({
-#   df <- df1() %>% 
-#     select(Org.Name) %>% 
-#     distinct(Org.Name)
-#   unlist(df)
-# })
-# 
-# output$allOrgs <- renderMenu({
-#   allOrgs()
-# })
-# 
 
-# 
-# output$fullOrgName <- renderUI({
-#   #unique(inData["Org.Name"])
-#   df <- df1() %>% 
-#     distinct(Org.Name)
-# })
-  
-  #fullOrgs <- unique(inData$Org.Code)
-  #fullOrgNames <- unique(inData$Org.Name)
-  #fullYears <- unique(inData$Year)
-  #fullRegions <- unique(inData$Region)
-  
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Functions
-  #
-  ### Graph: Line
-  #rendLineGsub <- function(df, xn, yn, useFactor, useFields){
-  #  renderPlot({
-  #  dfa <- df %>% 
-  #    dplyr::filter(
-  #      Field %in% useFields
-  #    )
-  #  # initially used subset() but ran into difficulties:
-  #  # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
-  #  p <- ggplot(data = dfa,
-  #              aes_string(x = xn, 
-  #                         y = yn, 
-  #                         group = useFactor, 
-  #                         colour = useFactor)) +
-  #    geom_line() +
-  #    geom_point() +
-  #    scale_y_continuous(labels = comma)
-  #  p
-  #  },
-  #  width = "auto",
-  #  height = "auto"
-  #  )
-  #}
-  #
-  ### Graph: Point
-  #rendPointGsub <- function(df, xn, yn, useFactor, useFields){
-  #  renderPlot({
-  #  dfa <- df %>% 
-  #    dplyr::filter(
-  #      Field %in% useFields
-  #    )
-  #  # initially used subset() but ran into difficulties:
-  #  # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
-  #  p <- ggplot(data = dfa,
-  #              aes_string(x = xn, 
-  #                         y = yn, 
-  #                         group = useFactor, 
-  #                         colour = useFactor)) +
-  #    geom_point() +
-  #    scale_y_continuous(labels = comma)
-  #  p
-  #  },
-  #  width = "auto",
-  #  height = "auto"
-  #  )
-  #}
-  #
-  ### Graph: Column
-  #rendColGsub <- function(df, xn, yn, useFactor, useFields){
-  #  renderPlot({
-  #  dfa <- df %>% 
-  #    dplyr::filter(
-  #      Field %in% useFields
-  #    )
-  #  dfa$Field <- factor(dfa$Field, levels = rev(useFields))
-  #  p <- ggplot(data = dfa,
-  #              aes_string(x = xn, 
-  #                         y = yn, 
-  #                         fill = useFactor)) +
-  #    geom_col(colour = "black", 
-  #             alpha = 0.5 
-  #             #position = "dodge" # To put side-by-side
-  #    ) +
-  #    scale_fill_hue(direction = -1) +
-  #    scale_y_continuous(labels = comma)
-  #  p
-  #  },
-  #  width = "auto",
-  #  height = "auto"
-  #  )
-  #}
-  #
-  ### Graph: Proportion Full Column
-  #rendPropColGsub <- function(df, xn, yn, useFactor, useFields){
-  #  renderPlot({
-  #  dfa <- df %>% 
-  #    dplyr::filter(
-  #      Field %in% useFields
-  #    )
-  #  dfa$Field <- factor(dfa$Field, levels = rev(useFields))
-  #  
-  #  # Had to explicitly name fields as couldn't get variables to feed through :-(
-  #  dfb <- dfa %>% 
-  #    group_by(Month, Field) %>% 
-  #    summarise(n = sum(Values)) %>% 
-  #    mutate(percentage = n / sum(n))
-  #  
-  #  p <- ggplot(data = dfb,
-  #              aes(x = Month,
-  #                  y = percentage,
-  #                  group = Field,
-  #                  fill = Field)) +
-  #    geom_col(colour = "black", alpha = 0.5) +
-  #    scale_fill_hue(direction = -1) +
-  #    scale_y_continuous(labels = percent)
-  #  p
-  #  },
-  #  width = "auto",
-  #  height = "auto"
-  #  )
-  #}
-  #
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data preparation
-  #
-  ### Filter dataset
-  #selData <- inData %>% 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Functions
+
+## Graph: Line
+rendLineGsub <- function(df, xn, yn, useFactor, useFields){
+  renderPlot({
+  dfa <- df %>% 
+    dplyr::filter(
+      Field %in% useFields
+    )
+  # initially used subset() but ran into difficulties:
+  # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
+  p <- ggplot(data = dfa,
+              aes_string(x = xn, 
+                         y = yn, 
+                         group = useFactor, 
+                         colour = useFactor)) +
+    geom_line() +
+    geom_point() +
+    scale_y_continuous(labels = comma)
+  p
+  },
+  width = "auto",
+  height = "auto"
+  )
+}
+
+### Graph: Point
+#rendPointGsub <- function(df, xn, yn, useFactor, useFields){
+#  renderPlot({
+#  dfa <- df %>% 
+#    dplyr::filter(
+#      Field %in% useFields
+#    )
+#  # initially used subset() but ran into difficulties:
+#  # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
+#  p <- ggplot(data = dfa,
+#              aes_string(x = xn, 
+#                         y = yn, 
+#                         group = useFactor, 
+#                         colour = useFactor)) +
+#    geom_point() +
+#    scale_y_continuous(labels = comma)
+#  p
+#  },
+#  width = "auto",
+#  height = "auto"
+#  )
+#}
+#
+### Graph: Column
+#rendColGsub <- function(df, xn, yn, useFactor, useFields){
+#  renderPlot({
+#  dfa <- df %>% 
+#    dplyr::filter(
+#      Field %in% useFields
+#    )
+#  dfa$Field <- factor(dfa$Field, levels = rev(useFields))
+#  p <- ggplot(data = dfa,
+#              aes_string(x = xn, 
+#                         y = yn, 
+#                         fill = useFactor)) +
+#    geom_col(colour = "black", 
+#             alpha = 0.5 
+#             #position = "dodge" # To put side-by-side
+#    ) +
+#    scale_fill_hue(direction = -1) +
+#    scale_y_continuous(labels = comma)
+#  p
+#  },
+#  width = "auto",
+#  height = "auto"
+#  )
+#}
+#
+### Graph: Proportion Full Column
+#rendPropColGsub <- function(df, xn, yn, useFactor, useFields){
+#  renderPlot({
+#  dfa <- df %>% 
+#    dplyr::filter(
+#      Field %in% useFields
+#    )
+#  dfa$Field <- factor(dfa$Field, levels = rev(useFields))
+#  
+#  # Had to explicitly name fields as couldn't get variables to feed through :-(
+#  dfb <- dfa %>% 
+#    group_by(Month, Field) %>% 
+#    summarise(n = sum(Values)) %>% 
+#    mutate(percentage = n / sum(n))
+#  
+#  p <- ggplot(data = dfb,
+#              aes(x = Month,
+#                  y = percentage,
+#                  group = Field,
+#                  fill = Field)) +
+#    geom_col(colour = "black", alpha = 0.5) +
+#    scale_fill_hue(direction = -1) +
+#    scale_y_continuous(labels = percent)
+#  p
+#  },
+#  width = "auto",
+#  height = "auto"
+#  )
+#}
+#
+#  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#  ## Data preparation
+#  #
+#  ### Filter dataset
+#  #selData <- inData %>% 
   #  filter(Year == 2021 & Org.Code == 'RX6')
   #
   ### Convert the numerical columns to numerical data from strings
