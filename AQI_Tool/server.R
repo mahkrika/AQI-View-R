@@ -20,6 +20,33 @@ shinyServer(function(input, output) {
     updateSelectInput(session = getDefaultReactiveDomain(), 'menuYear', selected = '2021');
   })
   
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Functions
+  
+  ## Graph: Line
+  rendLineGsub <- function(xn, yn, useFactor, useFields){
+    renderPlot({
+      dfa <- selDataL() %>% 
+        dplyr::filter(
+          Field %in% useFields
+        )
+      # initially used subset() but ran into difficulties:
+      # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
+      p <- ggplot(data = dfa,
+                  aes_string(x = xn, 
+                             y = yn, 
+                             group = useFactor, 
+                             colour = useFactor)) +
+        geom_line() +
+        geom_point() +
+        scale_y_continuous(labels = comma)
+      p
+    },
+    width = "auto",
+    height = "auto"
+    )
+  }
+  
   
   
   #inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
@@ -30,42 +57,27 @@ shinyServer(function(input, output) {
   inData <- eventReactive(input$submit, {
     inLoc <- input$urlIn
     inFile <- read.csv(inLoc)
+    
+   # inFile[,6:ncol(inFile)] <- as.numeric(unlist(inFile[,6:ncol(inFile)]))
+    
   })
   
-  selOptions <- eventReactive(input$submit, {
+  selData <- eventReactive(input$submit, {
     df <- filter(inData(), Org.Name == input$menuOrg & Year == input$menuYear)
   })
   
+  selDataL <- eventReactive(input$submit, {
+    df <- selData() %>% 
+      pivot_longer(cols = 6:ncol(selData()), names_to = 'Field', values_to = 'Values')
+    df$Field <- factor(df$Field, levels = unique(mixedsort(as.character(df$Field))))
+  })
+  
    output$testTabCnts <- renderTable({
-     selOptions()
+     selDataL()
    })
+   
+   #output$callsAns <- rendLineGsub('Month', 'Values', 'Field', c('A1'))
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Functions
-
-## Graph: Line
-rendLineGsub <- function(df, xn, yn, useFactor, useFields){
-  renderPlot({
-  dfa <- df %>% 
-    dplyr::filter(
-      Field %in% useFields
-    )
-  # initially used subset() but ran into difficulties:
-  # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
-  p <- ggplot(data = dfa,
-              aes_string(x = xn, 
-                         y = yn, 
-                         group = useFactor, 
-                         colour = useFactor)) +
-    geom_line() +
-    geom_point() +
-    scale_y_continuous(labels = comma)
-  p
-  },
-  width = "auto",
-  height = "auto"
-  )
-}
 
 ### Graph: Point
 #rendPointGsub <- function(df, xn, yn, useFactor, useFields){

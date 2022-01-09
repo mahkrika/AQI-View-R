@@ -9,6 +9,9 @@
 
 library(shiny)
 library(shinydashboard)
+library(dplyr)
+library(tidyr)
+library(gtools)
 
 year <- c('2021', '2020', '2019', '2018')
 manualOrgs <- c('England', 'North East and Yorkshire', 'North West', 'Midlands', 'East of England', 'London',
@@ -45,6 +48,7 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
-    tableOutput('testTabCnts')
+    tableOutput('testTabCnts'),
+    plotOutput('callsAns')
   )
 )
