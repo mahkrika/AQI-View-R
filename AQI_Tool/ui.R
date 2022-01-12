@@ -52,7 +52,8 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
-    tableOutput('testTabCnts'),
-    plotOutput('callsAns')
+    plotOutput('callsAns'),
+    tableOutput('testTabCnts')
+    
   )
 )

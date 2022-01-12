@@ -30,7 +30,7 @@ shinyServer(function(input, output) {
   # Functions
   
   ## Graph: Line
-  rendLineGsub <- function(xn, yn, useFactor, useFields){
+  rendLineGsub <- function(xn, yn, useFactor, useFields, useTitle, useX, useY){
     renderPlot({
       dfa <- selDataL() %>% 
         dplyr::filter(
@@ -45,7 +45,11 @@ shinyServer(function(input, output) {
                              colour = useFactor)) +
         geom_line() +
         geom_point() +
-        scale_y_continuous(labels = comma)
+        scale_y_continuous(labels = comma) +
+        labs(title = useTitle,
+             x = useX,
+             y = useY
+             )
       p
     },
     width = "auto",
@@ -53,6 +57,84 @@ shinyServer(function(input, output) {
     )
   }
   
+  ## Graph: Point
+  rendPointGsub <- function(df, xn, yn, useFactor, useFields){
+    renderPlot({
+    dfa <- df %>% 
+      dplyr::filter(
+        Field %in% useFields
+      )
+    # initially used subset() but ran into difficulties:
+    # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
+    p <- ggplot(data = dfa,
+                aes_string(x = xn, 
+                           y = yn, 
+                           group = useFactor, 
+                           colour = useFactor)) +
+      geom_point() +
+      scale_y_continuous(labels = comma)
+    p
+    },
+    width = "auto",
+    height = "auto"
+    )
+  }
+  
+  ## Graph: Column
+  rendColGsub <- function(df, xn, yn, useFactor, useFields){
+    renderPlot({
+    dfa <- df %>% 
+      dplyr::filter(
+        Field %in% useFields
+      )
+    dfa$Field <- factor(dfa$Field, levels = rev(useFields))
+    p <- ggplot(data = dfa,
+                aes_string(x = xn, 
+                           y = yn, 
+                           fill = useFactor)) +
+      geom_col(colour = "black", 
+               alpha = 0.5 
+               #position = "dodge" # To put side-by-side
+      ) +
+      scale_fill_hue(direction = -1) +
+      scale_y_continuous(labels = comma)
+    p
+    },
+    width = "auto",
+    height = "auto"
+    )
+  }
+  
+  ## Graph: Proportion Full Column
+  rendPropColGsub <- function(df, xn, yn, useFactor, useFields){
+    renderPlot({
+    dfa <- df %>% 
+      dplyr::filter(
+        Field %in% useFields
+      )
+    dfa$Field <- factor(dfa$Field, levels = rev(useFields))
+    
+    # Had to explicitly name fields as couldn't get variables to feed through :-(
+    dfb <- dfa %>% 
+      group_by(Month, Field) %>% 
+      summarise(n = sum(Values)) %>% 
+      mutate(percentage = n / sum(n))
+    
+    p <- ggplot(data = dfb,
+                aes(x = Month,
+                    y = percentage,
+                    group = Field,
+                    fill = Field)) +
+      geom_col(colour = "black", alpha = 0.5) +
+      scale_fill_hue(direction = -1) +
+      scale_y_continuous(labels = percent)
+    p
+    },
+    width = "auto",
+    height = "auto"
+    )
+  }
+  #
   
   
   #inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
@@ -62,28 +144,12 @@ shinyServer(function(input, output) {
   
   inData <- eventReactive(input$submit, {
     inLoc <- input$urlIn
-    #inFile <- read.csv(inLoc)
     inFile <- read.csv(inLoc, header = TRUE, stringsAsFactors = FALSE, na.strings = c("."))#%>% 
-      #as.data.frame(inFile)
-      
-    #print(inFile)
-    #typeof(inFile)#%>% 
-      #mutate_if(is.character, as.numeric) %>% 
-      #select(c(6:8)) %>%
-      #flatten()
-    #locshdshjdshj <- c(6:123)
-    
-   # inFile[,6:ncol(inFile)] <- as.numeric(unlist(inFile[,6:ncol(inFile)]))
-    #inFile[,6:ncol(inFile)] <- unlist(inFile[,6:ncol(inFile)])
-  #  inFile <- inFile %>%
-  #    select(locs) %>% 
-  #    flatten()
   })
   
   selData <- eventReactive(input$submit, {
     df <- inData() %>% 
       filter(Year == input$menuYear & Org.Name == input$menuOrg)
-    #df <- filter(inData(), Org.Name == input$menuOrg & Year == input$menuYear)
     #df[,6:ncol(df)] <- as.numeric(unlist(df[,6:ncol(df)]))
   })
   
@@ -93,91 +159,15 @@ shinyServer(function(input, output) {
     #df$Field <- factor(df$Field, levels = unique(mixedsort(as.character(df$Field))))
   })
   
-   output$testTabCnts <- renderTable({
-     selDataL()
-   })
+
    
-   #output$callsAns <- rendLineGsub('Month', 'Values', 'Field', c('A1'))
+   output$callsAns <- rendLineGsub('Month', 'Values', 'Field', c('A1'), 'Number of calls answered', 'Month', 'Count of calls answered')
+
+   output$testTabCnts <- renderTable({
+     selData()
+   })
 
 
-### Graph: Point
-#rendPointGsub <- function(df, xn, yn, useFactor, useFields){
-#  renderPlot({
-#  dfa <- df %>% 
-#    dplyr::filter(
-#      Field %in% useFields
-#    )
-#  # initially used subset() but ran into difficulties:
-#  # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
-#  p <- ggplot(data = dfa,
-#              aes_string(x = xn, 
-#                         y = yn, 
-#                         group = useFactor, 
-#                         colour = useFactor)) +
-#    geom_point() +
-#    scale_y_continuous(labels = comma)
-#  p
-#  },
-#  width = "auto",
-#  height = "auto"
-#  )
-#}
-#
-### Graph: Column
-#rendColGsub <- function(df, xn, yn, useFactor, useFields){
-#  renderPlot({
-#  dfa <- df %>% 
-#    dplyr::filter(
-#      Field %in% useFields
-#    )
-#  dfa$Field <- factor(dfa$Field, levels = rev(useFields))
-#  p <- ggplot(data = dfa,
-#              aes_string(x = xn, 
-#                         y = yn, 
-#                         fill = useFactor)) +
-#    geom_col(colour = "black", 
-#             alpha = 0.5 
-#             #position = "dodge" # To put side-by-side
-#    ) +
-#    scale_fill_hue(direction = -1) +
-#    scale_y_continuous(labels = comma)
-#  p
-#  },
-#  width = "auto",
-#  height = "auto"
-#  )
-#}
-#
-### Graph: Proportion Full Column
-#rendPropColGsub <- function(df, xn, yn, useFactor, useFields){
-#  renderPlot({
-#  dfa <- df %>% 
-#    dplyr::filter(
-#      Field %in% useFields
-#    )
-#  dfa$Field <- factor(dfa$Field, levels = rev(useFields))
-#  
-#  # Had to explicitly name fields as couldn't get variables to feed through :-(
-#  dfb <- dfa %>% 
-#    group_by(Month, Field) %>% 
-#    summarise(n = sum(Values)) %>% 
-#    mutate(percentage = n / sum(n))
-#  
-#  p <- ggplot(data = dfb,
-#              aes(x = Month,
-#                  y = percentage,
-#                  group = Field,
-#                  fill = Field)) +
-#    geom_col(colour = "black", alpha = 0.5) +
-#    scale_fill_hue(direction = -1) +
-#    scale_y_continuous(labels = percent)
-#  p
-#  },
-#  width = "auto",
-#  height = "auto"
-#  )
-#}
-#
 #  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #  ## Data preparation
 #  #
@@ -212,13 +202,14 @@ shinyServer(function(input, output) {
   #       x = 'Month',
   #       y = 'Seconds')
   #
-  ## LINE - Number of calls answered by month
-  #rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A1')) + 
-  #  labs(title = 'Number of calls answered',
-  #       subtitle = str_to_title(selDataL$Org.Name),
-  #       x = 'Month',
-  #       y = 'Count of calls answered')
-  #
+  # LINE - Number of calls answered by month
+ 
+#   rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A1')) + 
+#    labs(title = 'Number of calls answered',
+#         subtitle = str_to_title(selDataL$Org.Name),
+#         x = 'Month',
+#         y = 'Count of calls answered')
+##
   ## LINE - Number of incidents per category by month
   #rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12')) + 
   #  labs(title = 'Number of incidents per category by month',
