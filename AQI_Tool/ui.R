@@ -10,8 +10,12 @@
 library(shiny)
 library(shinydashboard)
 library(dplyr)
+library(ggplot2)
 library(tidyr)
+library(plotly)
 library(gtools)
+library(stringr)
+library(scales)
 
 year <- c('2021', '2020', '2019', '2018')
 manualOrgs <- c('England', 'North East and Yorkshire', 'North West', 'Midlands', 'East of England', 'London',

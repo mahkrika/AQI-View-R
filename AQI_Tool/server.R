@@ -9,6 +9,12 @@
 
 library(shiny)
 library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(plotly)
+library(gtools)
+library(stringr)
+library(scales)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -52,24 +58,39 @@ shinyServer(function(input, output) {
   #inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
   #inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE)
   
-  #inData <- read.csv("AmbSYS-to-Nov-2021.csv")
+  #inData <- read.csv("AmbSYS-to-Nov-2021_Cut.csv")
   
   inData <- eventReactive(input$submit, {
     inLoc <- input$urlIn
-    inFile <- read.csv(inLoc)
+    #inFile <- read.csv(inLoc)
+    inFile <- read.csv(inLoc, header = TRUE, stringsAsFactors = FALSE, na.strings = c("."))#%>% 
+      #as.data.frame(inFile)
+      
+    #print(inFile)
+    #typeof(inFile)#%>% 
+      #mutate_if(is.character, as.numeric) %>% 
+      #select(c(6:8)) %>%
+      #flatten()
+    #locshdshjdshj <- c(6:123)
     
    # inFile[,6:ncol(inFile)] <- as.numeric(unlist(inFile[,6:ncol(inFile)]))
-    
+    #inFile[,6:ncol(inFile)] <- unlist(inFile[,6:ncol(inFile)])
+  #  inFile <- inFile %>%
+  #    select(locs) %>% 
+  #    flatten()
   })
   
   selData <- eventReactive(input$submit, {
-    df <- filter(inData(), Org.Name == input$menuOrg & Year == input$menuYear)
+    df <- inData() %>% 
+      filter(Year == input$menuYear & Org.Name == input$menuOrg)
+    #df <- filter(inData(), Org.Name == input$menuOrg & Year == input$menuYear)
+    #df[,6:ncol(df)] <- as.numeric(unlist(df[,6:ncol(df)]))
   })
   
   selDataL <- eventReactive(input$submit, {
     df <- selData() %>% 
       pivot_longer(cols = 6:ncol(selData()), names_to = 'Field', values_to = 'Values')
-    df$Field <- factor(df$Field, levels = unique(mixedsort(as.character(df$Field))))
+    #df$Field <- factor(df$Field, levels = unique(mixedsort(as.character(df$Field))))
   })
   
    output$testTabCnts <- renderTable({
