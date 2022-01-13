@@ -43,7 +43,8 @@ sidebar <-   dashboardSidebar(
                               style="color: #FFFFFF; background-color: #005EB8; border-color: #768692"))
     ),
     
-    menuItem('Calls Answered', tabName = 'callAns', icon = icon('phone'))
+    menuItem('Calls Answered - Counts', tabName = 'callAns', icon = icon('phone'))
+   # menuItem('Calls Answered - Times', tabName = 'callAnsTime', icon = icon('phone'))
     
     
   )
@@ -56,6 +57,11 @@ body <- dashboardBody(
             plotOutput('callsAns'),
             tableOutput('testTabCnts')
     ),
+   # tabItem(tabName = 'callAnsTime',
+   #         h2('Calls Answer Times'),
+   #         plotOutput('callsAnsTime'),
+   #         tableOutput('testTabCnts')
+   # ),
     
     tabItem(tabName = 'about',
             h2('About the AQI View-R'),

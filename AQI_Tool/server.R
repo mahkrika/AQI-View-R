@@ -58,7 +58,7 @@ shinyServer(function(input, output) {
   }
   
   ## Graph: Point
-  rendPointGsub <- function(df, xn, yn, useFactor, useFields){
+  rendPointGsub <- function(df, xn, yn, useFactor, useFields, useTitle, useX, useY){
     renderPlot({
     dfa <- df %>% 
       dplyr::filter(
@@ -72,7 +72,11 @@ shinyServer(function(input, output) {
                            group = useFactor, 
                            colour = useFactor)) +
       geom_point() +
-      scale_y_continuous(labels = comma)
+      scale_y_continuous(labels = comma) +
+      labs(title = useTitle,
+           x = useX,
+           y = useY
+      )
     p
     },
     width = "auto",
@@ -144,7 +148,8 @@ shinyServer(function(input, output) {
   
   inData <- eventReactive(input$submit, {
     inLoc <- input$urlIn
-    inFile <- read.csv(inLoc, header = TRUE, stringsAsFactors = FALSE, na.strings = c("."))#%>% 
+    inFile <- read.csv(inLoc, header = TRUE, stringsAsFactors = FALSE, na.strings = c('.', '-'))#%>% 
+    #inFile <- as.numeric(inFile[,6:128])
   })
   
   selData <- eventReactive(input$submit, {
@@ -161,8 +166,12 @@ shinyServer(function(input, output) {
   
 
    
-   output$callsAns <- rendLineGsub('Month', 'Values', 'Field', c('A1'), 'Number of calls answered', 'Month', 'Count of calls answered')
+   output$callsAns <- rendLineGsub('Month', 'Values', 'Field', c('A1'), 
+                                   'Number of calls answered', 'Month', 'Count of calls answered')
 
+   output$callsAnsTime <- rendPointGsub('Month', 'Values', 'Field', c('A3', 'A4', 'A114', 'A5', 'A6'),
+                                       'Call answer times', 'Month', 'Seconds')
+   
    output$testTabCnts <- renderTable({
      selData()
    })

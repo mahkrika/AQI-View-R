@@ -8,7 +8,7 @@ library(scales)
 library(hms)
 
 inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
-inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE)
+inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE, na.strings = c('.', '-'))
 fullOrgs <- unique(inData$Org.Code)
 fullOrgNames <- unique(inData$Org.Name)
 fullYears <- unique(inData$Year)
