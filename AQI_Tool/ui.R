@@ -73,8 +73,8 @@ body <- dashboardBody(
     tabItem(tabName = 'about',
             h2('About the AQI View-R'),
             p(''),
-            p('This tools is primarily built to aid my learning of R. However, having worked
-              within the NHS for several years it still pains me to see so much of the data
+            p('This tool is primarily built to aid my learning of R. However, having worked
+              within the NHS for several years it still surprises me to see so much of the data
               and processes buried away. The Ambulance Quality Indicators (AQIs) are a dataset
               that are released each month and cover a wide range of indicators for all ambulance
               trusts.'),
