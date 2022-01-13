@@ -15,6 +15,7 @@ library(plotly)
 library(gtools)
 library(stringr)
 library(scales)
+library(hms)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -58,12 +59,17 @@ shinyServer(function(input, output) {
   }
   
   ## Graph: Point
-  rendPointGsub <- function(df, xn, yn, useFactor, useFields, useTitle, useX, useY){
+  rendPointGsub <- function(xn, yn, useFactor, useFields, useTitle, useX, useY){
+    #renderPlot({
+    #dfa <- df %>% 
+    #  dplyr::filter(
+    #    Field %in% useFields
+    #  )
     renderPlot({
-    dfa <- df %>% 
-      dplyr::filter(
-        Field %in% useFields
-      )
+      dfa <- selDataL() %>% 
+        dplyr::filter(
+          Field %in% useFields
+        )
     # initially used subset() but ran into difficulties:
     # https://stackoverflow.com/questions/17075529/subset-based-on-variable-column-name
     p <- ggplot(data = dfa,
@@ -148,7 +154,7 @@ shinyServer(function(input, output) {
   
   inData <- eventReactive(input$submit, {
     inLoc <- input$urlIn
-    inFile <- read.csv(inLoc, header = TRUE, stringsAsFactors = FALSE, na.strings = c('.', '-'))#%>% 
+    inFile <- read.csv(inLoc, header = TRUE, stringsAsFactors = FALSE, na.strings = c('.', '-'))#%>%
     #inFile <- as.numeric(inFile[,6:128])
   })
   
@@ -172,9 +178,45 @@ shinyServer(function(input, output) {
    output$callsAnsTime <- rendPointGsub('Month', 'Values', 'Field', c('A3', 'A4', 'A114', 'A5', 'A6'),
                                        'Call answer times', 'Month', 'Seconds')
    
+   output$callAnsTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A1', 'A3', 'A4', 'A114', 'A5', 'A6') %>% 
+       mutate(A1 = comma(A1),
+              A3 = comma(A3),
+              A4 = comma(A4),
+              A114 = comma(A114),
+              A5 = comma(A5),
+              A6 = comma(A6))
+   }, striped = TRUE)
+   
+   output$callAnsTblKey <- renderText({
+     paste("<b>A1: </b>", "Calls answered", "<br>",
+           "<b>A3: </b>", "Mean", "<br>",
+           "<b>A4: </b>", "Median", "<br>",
+           "<b>A114: </b>", "90th centile", "<br>",
+           "<b>A5: </b>", "95th centile", "<br>",
+           "<b>A6: </b>", "99th centle", "<br>")
+     
+     #box(
+     #  "Box content here", br(), "More box content"
+     #  )
+     
+     # p('A1: '),
+     # p('A3: '),
+     # p('A4: '),
+     # p('A114: '),
+     # p('A6: '),
+     # p('A5: '))
+   })
+   #output$callAnsTblKey <- renderText({
+   #  
+   #})
+   
    output$testTabCnts <- renderTable({
      selData()
    })
+   
 
 
 #  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

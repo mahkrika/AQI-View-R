@@ -16,6 +16,7 @@ library(plotly)
 library(gtools)
 library(stringr)
 library(scales)
+library(hms)
 
 year <- c('2021', '2020', '2019', '2018')
 manualOrgs <- c('England', 'North East and Yorkshire', 'North West', 'Midlands', 'East of England', 'London',
@@ -43,8 +44,9 @@ sidebar <-   dashboardSidebar(
                               style="color: #FFFFFF; background-color: #005EB8; border-color: #768692"))
     ),
     
-    menuItem('Calls Answered - Counts', tabName = 'callAns', icon = icon('phone'))
-   # menuItem('Calls Answered - Times', tabName = 'callAnsTime', icon = icon('phone'))
+    #menuItem('Calls Answered - Counts', tabName = 'callAns', icon = icon('phone')),
+    #menuItem('Calls Answered - Times', tabName = 'callAnsTime', icon = icon('phone')),
+    menuItem('Call Answering', tabName = 'callAns', icon = icon('phone'))
     
     
   )
@@ -52,17 +54,22 @@ sidebar <-   dashboardSidebar(
 
 body <- dashboardBody(
   tabItems(
+    #tabItem(tabName = 'callAns',
+    #        h2('Calls Answered content'),
+    #        p('blleeeehhhh')#plotOutput('callsAns')
+    #        #tableOutput('testTabCnts')
+    #),
     tabItem(tabName = 'callAns',
-            h2('Calls Answered content'),
-            plotOutput('callsAns'),
-            tableOutput('testTabCnts')
+            h2('Call Answering'),
+            p('This page details elements of call answering figures:'),
+            fluidRow(column(6, plotOutput('callsAns')),
+                     column(6, plotOutput('callsAnsTime'))
+            ),
+            p(''),
+            fluidRow(column(8,tableOutput('callAnsTbl')),
+                     column(4,htmlOutput('callAnsTblKey'))
+            )
     ),
-   # tabItem(tabName = 'callAnsTime',
-   #         h2('Calls Answer Times'),
-   #         plotOutput('callsAnsTime'),
-   #         tableOutput('testTabCnts')
-   # ),
-    
     tabItem(tabName = 'about',
             h2('About the AQI View-R'),
             p(''),
