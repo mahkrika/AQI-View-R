@@ -1,0 +1,123 @@
+ID	Detail
+A1	Calls answered
+A2	Total call answer time
+A3	Mean call answer time
+A4	Median call answer time
+A114	90th centile call answer time
+A5	95th centile call answer time
+A6	99th centile call answer time
+A7	All incidents
+A8	C1 incidents
+A9	C1T incidents
+A10	C2 incidents
+A11	C3 incidents
+A12	C4 incidents
+A57	HCP incidents with non-emergency conveyance
+A112	Incidents with non-emergency conveyance
+A74	HCP Level 1 incidents
+A75	HCP Level 2 incidents
+A76	HCP Level 3 incidents
+A77	HCP Level 4 incidents
+A78	IFT Level 1 incidents
+A79	IFT Level 2 incidents
+A80	IFT Level 3 incidents
+A81	IFT Level 4 incidents
+A115	C1 incidents excluding HCP and IFT
+A119	C2 incidents excluding HCP and IFT
+A13	C1 NoC / PTQ / keywords incidents
+A14	Total time to NoC / PTQ / keywords C1
+A15	Mean time to NoC / PTQ / keywords C1
+A16	90th centile time to NoC / PTQ / keywords C1
+A111	C1 incidents from NHS 111
+A17	Incidents with no face-to-face response
+A18	Incidents closed with advice: Non-C5
+A19	Incidents referred to other service: Non-C5
+A20	Incidents with call back before response on scene: Non-C5
+A21	Incidents closed with advice: C5
+A22	Incidents referred to other service: C5
+A23	Incidents with call back before response on scene: C5
+A113	C5 incidents with response on scene
+A24	Total response time: C1
+A25	Mean response time: C1
+A26	90th centile response time: C1
+A27	Total response time: C1T
+A28	Mean response time: C1T
+A29	90th centile response time: C1T
+A30	Total response time: C2
+A31	Mean response time: C2
+A32	90th centile response time: C2
+A33	Total response time: C3
+A34	Mean response time: C3
+A35	90th centile response time: C3
+A36	Total response time: C4
+A37	Mean response time: C4
+A38	90th centile response time: C4
+A82	Total response time: HCP Level 1
+A83	Mean response time: HCP Level 1
+A84	90th centile response time: HCP Level 1
+A85	Total response time: HCP Level 2
+A86	Mean response time: HCP Level 2
+A87	90th centile response time: HCP Level 2
+A88	Total response time: HCP Level 3
+A89	Mean response time: HCP Level 3
+A90	90th centile response time: HCP Level 3
+A91	Total response time: HCP Level 4
+A92	Mean response time: HCP Level 4
+A93	90th centile response time: HCP Level 4
+A94	Total response time: IFT Level 1
+A95	Mean response time: IFT Level 1
+A96	90th centile response time: IFT Level 1
+A97	Total response time: IFT Level 2
+A98	Mean response time: IFT Level 2
+A99	90th centile response time: IFT Level 2
+A100	Total response time: IFT Level 3
+A101	Mean response time: IFT Level 3
+A102	90th centile response time: IFT Level 3
+A103	Total response time: IFT Level 4
+A104	Mean response time: IFT Level 4
+A105	90th centile response time: IFT Level 4
+A116	Total response time: C1 excluding HCP and IFT
+A117	Mean response time: C1 excluding HCP and IFT
+A118	90th centile response time: C1 excluding HCP and IFT
+A120	Total response time: C2 excluding HCP and IF
+A121	Mean response time: C2 excluding HCP and IFT
+A122	90th centile response time: C2 excluding HCP and IFT
+A39	Resources allocated to C1
+A40	Resources arriving to C1
+A41	Resources allocated to C1T
+A42	Resources arriving to C1T
+A43	Resources allocated to C2
+A44	Resources arriving to C2
+A45	Resources allocated to C3
+A46	Resources arriving to C3
+A47	Resources allocated to C4
+A48	Resources arriving to C4
+A49	Bystander CPR count
+A50	Total time to bystander CPR
+A51	Mean time to bystander CPR
+A52	90th centile time to bystander CPR
+A106	Section 136 count
+A107	Total response time: Section 136
+A108	Mean response time: Section 136
+A109	90th centile response time: Section 136
+A110	Section 136 transport
+A53	Incidents with transport to ED
+A54	Incidents with transport not to ED
+A55	Incidents with no transport
+A56	Incidents with face-to-face response
+A58	HCP 1-hour response
+A59	HCP 2-hour response
+A60	HCP 3-hour response
+A61	HCP 4-hour response
+A62	Total response time: HCP 1-hour response
+A63	Mean response time: HCP 1-hour response
+A64	90th centile response time: HCP 1-hour response
+A65	Total response time: HCP 2-hour response
+A66	Mean response time: HCP 2-hour response
+A67	90th centile response time: HCP 2-hour response
+A68	Total response time: HCP 3-hour response
+A69	Mean response time: HCP 3-hour response
+A70	90th centile response time: HCP 3-hour response
+A71	Total response time: HCP 4-hour response
+A72	Mean response time: HCP 4-hour response
+A73	90th centile response time: HCP 4-hour response
