@@ -27,6 +27,7 @@ manualOrgs <- c('England', 'North East and Yorkshire', 'North West', 'Midlands',
                 'WEST MIDLANDS AMBULANCE SERVICE UNIVERSITY NHS FOUNDATION TRUST', 'YORKSHIRE AMBULANCE SERVICE NHS TRUST',
                 'WEST MIDLANDS AMBULANCE SERVICE NHS FOUNDATION TRUST')
 
+
 sidebar <-   dashboardSidebar(
   sidebarMenu(
     menuItem("About", tabName = "about", icon = icon("crow")),
@@ -46,7 +47,8 @@ sidebar <-   dashboardSidebar(
     
     #menuItem('Calls Answered - Counts', tabName = 'callAns', icon = icon('phone')),
     #menuItem('Calls Answered - Times', tabName = 'callAnsTime', icon = icon('phone')),
-    menuItem('Call Answering', tabName = 'callAns', icon = icon('phone'))
+    menuItem('Call Answering', tabName = 'callAns', icon = icon('phone')),
+    menuItem('Incidents - Counts', tabName = 'incsCounts', icon = icon('phone'))
     
     
   )
@@ -66,10 +68,17 @@ body <- dashboardBody(
                      column(6, plotOutput('callsAnsTime'))
             ),
             p(''),
-            fluidRow(column(8,tableOutput('callAnsTbl')),
-                     column(4,htmlOutput('callAnsTblKey'))
+            fluidRow(column(12,tableOutput('callAnsTbl'))
+                     #column(4,htmlOutput('callAnsTblKey'))
             )
     ),
+    
+    tabItem(tabName = 'incsCounts',
+            h2('Incident Counts'),
+            p('This page details elements of incidents by category:'),
+            fluidRow(column(6, plotOutput('incsCounts')))
+    ),
+    
     tabItem(tabName = 'about',
             h2('About the AQI View-R'),
             p(''),

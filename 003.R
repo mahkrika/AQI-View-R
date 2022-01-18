@@ -1,18 +1,20 @@
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-library(plotly)
+#library(plotly)
 library(gtools)
 library(stringr)
 library(scales)
 library(hms)
+#library(viridis)
 
 inLocation <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/12/AmbSYS-to-Nov-2021.csv'
-inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE, na.strings = c('.', '-'))
+inData <- read.csv("AmbSYS-to-Nov-2021.csv", header = TRUE, stringsAsFactors = FALSE, na.strings = c('.', '-'))
 fullOrgs <- unique(inData$Org.Code)
 fullOrgNames <- unique(inData$Org.Name)
 fullYears <- unique(inData$Year)
 fullRegions <- unique(inData$Region)
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Functions
@@ -121,17 +123,26 @@ selDataL <- selData %>%
 selDataL$Field <- factor(selDataL$Field, levels = unique(mixedsort(as.character(selDataL$Field))))
 
 
-
+selDataL <- merge(selDataL, field_key, by = 'Field')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Graph outputs using functions
 
 # Point - Call answer times by month
-rendPointGsub(selDataL, 'Month', 'Values', 'Field', c('A3', 'A4', 'A114', 'A5', 'A6')) + 
+rendPointGsub(selDataL, 'Month', 'Values', 'detail_field', c('A3', 'A4', 'A114', 'A5', 'A6')) + 
   labs(title = 'Call answer times',
        subtitle = str_to_title(selDataL$Org.Name),
        x = 'Month',
-       y = 'Seconds')
+       y = 'Seconds') +
+  #scale_x_continuous(labels = 'Month', breaks = 'Month') +
+  theme(legend.position="bottom") + 
+  guides(col = guide_legend(title = "",
+                            nrow=2, 
+                            byrow = TRUE
+                            ))
+
+
+
 
 # LINE - Number of calls answered by month
 rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A1')) + 
@@ -181,4 +192,40 @@ rendPropColGsub(selDataL, 'Month', 'Values', 'Field', c('A56', 'A17')) +
        subtitle = str_to_title(selDataL$Org.Name),
        x = 'Month',
        y = 'Percentage (%)')
+
+
+
+
+
+
+
+
+
+
+selDataL2 <- selDataL %>% 
+  filter(Field %in% c('A3', 'A4', 'A114', 'A5', 'A6'))
+  #filter(Field %in% c('A6'))
+
+selDataL2$detail_field2 <- factor(selDataL2$detail_field, levels = c('99th centile call answer time',
+                                                       '95th centile call answer time',
+                                                       '90th centile call answer time',
+                                                       'Mean call answer time',
+                                                       'Median call answer time'))
+
+ggplot(selDataL2, aes(Month, Values, group = detail_field2)) +
+  geom_area(aes(fill = detail_field2), position = 'identity') +
+  geom_line(aes(group = detail_field2)) +
+  scale_fill_viridis_d(option = 'C')
+
+
+selDataL2$Field2 <- factor(selDataL2$Field, levels = rev(c('A4', 'A3', 'A114', 'A5', 'A6')))
+ggplot(selDataL2, aes(Month, Values, group = Field2)) +
+  geom_area(aes(fill = Field2), position = 'identity') +
+  geom_line(aes(group = Field2)) +
+  scale_fill_viridis_d(option = 'C',
+                       labels = c('99th centile call answer time',
+                                  '95th centile call answer time',
+                                  '90th centile call answer time',
+                                  'Mean call answer time',
+                                  'Median call answer time'))
 
