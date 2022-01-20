@@ -48,7 +48,7 @@ sidebar <-   dashboardSidebar(
     #menuItem('Calls Answered - Counts', tabName = 'callAns', icon = icon('phone')),
     #menuItem('Calls Answered - Times', tabName = 'callAnsTime', icon = icon('phone')),
     menuItem('Call Answering', tabName = 'callAns', icon = icon('phone')),
-    menuItem('Incidents - Counts', tabName = 'incsCounts', icon = icon('phone'))
+    menuItem('Incidents - Counts', tabName = 'incsCounts', icon = icon('ambulance'))
     
     
   )
@@ -56,11 +56,7 @@ sidebar <-   dashboardSidebar(
 
 body <- dashboardBody(
   tabItems(
-    #tabItem(tabName = 'callAns',
-    #        h2('Calls Answered content'),
-    #        p('blleeeehhhh')#plotOutput('callsAns')
-    #        #tableOutput('testTabCnts')
-    #),
+    
     tabItem(tabName = 'callAns',
             h2('Call Answering'),
             p('This page details elements of call answering figures:'),
@@ -69,14 +65,18 @@ body <- dashboardBody(
             ),
             p(''),
             fluidRow(column(12,tableOutput('callAnsTbl'))
-                     #column(4,htmlOutput('callAnsTblKey'))
             )
     ),
     
     tabItem(tabName = 'incsCounts',
             h2('Incident Counts'),
             p('This page details elements of incidents by category:'),
-            fluidRow(column(6, plotOutput('incsCounts')))
+            fluidRow(column(6, plotOutput('incsCounts')),
+                     column(6, plotOutput('incsProps'))
+                     ),
+            p(''),
+            fluidRow(column(12,tableOutput('incsCatTbl'))
+            )
     ),
     
     tabItem(tabName = 'about',
@@ -85,21 +85,22 @@ body <- dashboardBody(
             p('This tool is primarily built to aid my learning of R. However, having worked
               within the NHS for several years it still surprises me to see so much of the data
               and processes buried away. The Ambulance Quality Indicators (AQIs) are a dataset
-              that are released each month and cover a wide range of indicators for all ambulance
+              that are released each month and cover a wide range of measures as recorded by ambulance
               trusts.'),
-            p('The datasets although entirely open and accessible can be difficult to navigate,
-              and even more challenging to extract useful information from. This tool aims to
-              assist in this process by presenting some of the core fields from the collection
-              in an easier to digest format.'),
+            p('The datasets (although entirely open and accessible) can be difficult to navigate,
+              and even more challenging to extract pertinent information from. This tool aims to
+              assist in this process by presenting some of the core information from the collection
+              in an easy to use tool.'),
             p('To use the tool you must (presently, though perhaps I can develop this further) copy
               the link location from the AQI datasets page and paste it into URL field in the
               Selections tab. You can then select which Organisation you are interested in
               (also National or Regional), and finally which year you are interested in. Click the
               Submit button and the data will be gathered and presented in the appropriate tabs.'),
-            p('This is very much a work in progress and will be developed in my free time, also
-              as my skills develop. If you are interested, links will be provided to my
+            p('This is very much a work in progress and will be developed in my free time. 
+              If you are interested, links will be provided to my
               Github account so that you can download/view the code that underpins this
-              development.')
+              development.'),
+            p('The data is presented without any guarantees of accuracy, use at your own risk!')
     )
   )
 )
@@ -110,9 +111,3 @@ ui <- dashboardPage(
   sidebar,
   body
 )
-#    ),
-#    #plotOutput('callsAns'),
-#    #tableOutput('testTabCnts')
-#    
-#  )
-#)

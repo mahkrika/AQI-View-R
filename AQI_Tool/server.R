@@ -163,11 +163,6 @@ shinyServer(function(input, output) {
   
   ## Graph: Point
   rendPointGsub <- function(xn, yn, useFactor, useFields, useTitle, useX, useY){
-    #renderPlot({
-    #dfa <- df %>% 
-    #  dplyr::filter(
-    #    Field %in% useFields
-    #  )
     renderPlot({
       dfa <- selDataL() %>% 
         dplyr::filter(
@@ -199,31 +194,46 @@ shinyServer(function(input, output) {
   }
   
   ## Graph: Column
-  rendColGsub <- function(xn, yn, useFactor, useFields, useTitle, useX, useY, useFactorNames){
+  rendColGsub <- function(xn, yn, useFactor, useFields, useTitle, useX, useY, useFactorNames, useFill){
     renderPlot({
     dfa <- selDataL() %>% 
       dplyr::filter(
         Field %in% useFields
       )
-    dfa$Field2 <- factor(dfa$Field, levels = rev(useFields))
+    dfa$Field2 <- factor(dfa$Field, levels = useFields)
     p <- ggplot(data = dfa,
                 aes_string(x = xn, 
-                           y = yn, 
-                           fill = useFactor)) +
-      geom_col(colour = "black", 
-               alpha = 0.5 
-               #position = "dodge" # To put side-by-side
-      ) +
+                           y = yn
+                           #fill = useFactor
+                           )) +
+        {if (useFill == 1) geom_col(
+          aes(fill = Field2),
+          colour = "black", 
+          alpha = 1,
+          position = position_stack(reverse = TRUE)
+        #position = position_fill(reverse = TRUE)
+        #,position = 'identity'
+  # https://stackoverflow.com/questions/42710056/reverse-stacked-bar-order
+               #,position = "dodge" # To put side-by-side
+      )} +
+      {if (useFill == 2) geom_col(
+        aes(fill = Field2),
+        colour = "black", 
+        alpha = 1,
+        #position = position_stack(reverse = TRUE)
+        position = position_fill(reverse = TRUE)
+      )} +
       scale_fill_viridis_d(option = 'C',
                            labels = useFactorNames) +
       #scale_fill_hue(direction = -1) +
+      
       scale_y_continuous(labels = comma) +
       labs(title = useTitle,
            x = useX,
            y = useY
       ) + 
       theme(legend.position="bottom") + 
-      guides(col = guide_legend(title = "",
+      guides(col = guide_legend(title = " ",
                                 nrow=3, 
                                 byrow = TRUE
       ))
@@ -233,68 +243,25 @@ shinyServer(function(input, output) {
     height = "auto"
     )
   }
-  
-  ## Graph: Proportion Full Column
-  rendPropColGsub <- function(xn, yn, useFactor, useFields){
-    renderPlot({
-    dfa <- selDataL() %>% 
-      dplyr::filter(
-        Field %in% useFields
-      )
-    dfa$Field <- factor(dfa$Field, levels = rev(useFields))
-    
-    # Had to explicitly name fields as couldn't get variables to feed through :-(
-    dfb <- dfa %>% 
-      group_by(Month, Field) %>% 
-      summarise(n = sum(Values)) %>% 
-      mutate(percentage = n / sum(n))
-    
-    p <- ggplot(data = dfb,
-                aes(x = Month,
-                    y = percentage,
-                    group = Field,
-                    fill = Field)) +
-      geom_col(colour = "black", alpha = 0.5) +
-      scale_fill_hue(direction = -1) +
-      scale_y_continuous(labels = percent)
-    p
-    },
-    width = "auto",
-    height = "auto"
-    )
-  }
-  #
-  
-  
-  #inLoc <- 'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2022/01/AmbSYS-to-Dec-2021.csv'
-  #inData <- read.csv(inLocation, header = TRUE, stringsAsFactors = FALSE)
-  
-  #inData <- read.csv("AmbSYS-to-Nov-2021.csv", header = TRUE, stringsAsFactors = FALSE, na.strings = c('.', '-'))
-  
+
   inData <- eventReactive(input$submit, {
     inLoc <- input$urlIn
     inFile <- read.csv(inLoc, header = TRUE, stringsAsFactors = FALSE, na.strings = c('.', '-'))#%>%
-    #inFile <- as.numeric(inFile[,6:128])
   })
   
   selData <- eventReactive(input$submit, {
     df <- inData() %>% 
       filter(Year == input$menuYear & Org.Name == input$menuOrg)
-    #df[,6:ncol(df)] <- as.numeric(unlist(df[,6:ncol(df)]))
   })
   
   selDataL <- eventReactive(input$submit, {
     df <- selData() %>% 
       pivot_longer(cols = 6:ncol(selData()), names_to = 'Field', values_to = 'Values')
     df <- merge(df, field_key, by = 'Field')
-    #df$Field <- factor(df$Field, levels = unique(mixedsort(as.character(df$Field))))
   })
    
    output$callsAns <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A1'), 
                                    'Number of calls answered', 'Month', 'Count of calls answered')
-
-   #output$callsAnsTime <- rendPointGsub('Month', 'Values', 'Field_Detail', c('A3', 'A4', 'A114', 'A5', 'A6'),
-   #                                    'Call answer times', 'Month', 'Seconds')
    
    output$callsAnsTime <- rendAreaIdentitysub('Month', 'Values', 'Field_Detail', c('A4', 'A3', 'A114', 'A5', 'A6'),
                                               'Call answer times', 'Month', 'Seconds', 'Field2',
@@ -305,13 +272,35 @@ shinyServer(function(input, output) {
                                                 'Median call answer time'))
    
    output$incsCounts <- rendColGsub('Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12'), 
-                                    'Incidents Per Category', 'Month', 'Incidents',
+                                    'Number of Incidents per Category', 'Month', 'Incidents',
                                     c('C1 incidents',
                                       'C2 incidents',
                                       'C3 incidents',
-                                      'C4 incidents'))
+                                      'C4 incidents'), 1)
+   
+   output$incsProps <- rendColGsub('Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12'), 
+                                    'Proportion of Category Incidents', 'Month', 'Proportion',
+                                    c('C1 incidents',
+                                      'C2 incidents',
+                                      'C3 incidents',
+                                      'C4 incidents'), 2)
    
    
+   output$incsCatTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A8', 'A10', 'A11', 'A12') %>% 
+       mutate(A8 = comma(A8),
+              A10 = comma(A10),
+              A11 = comma(A11),
+              A12 = comma(A12)) %>% 
+       dplyr::rename('C1 Incidents' = A8,
+                     'C2 Incidents' = A10,
+                     'C3 Incidents' = A11,
+                     'C4 Incidents' = A12)
+   }, striped = TRUE)
+   
+ 
    output$callAnsTbl <- renderTable({
      selData() %>% 
        select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
@@ -328,96 +317,7 @@ shinyServer(function(input, output) {
                      '90th centile call answer time' = A114,
                      '95th centile call answer time' = A5,
                      '99th centile call answer time' = A6)
-   }, striped = TRUE)
+   }, striped = TRUE)  
    
-  # output$testTabCnts <- renderTable({
-  #   selDataL()
-  # })
    
-
-
-#  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#  ## Data preparation
-#  #
-#  ### Filter dataset
-#  #selData <- inData %>% 
-  #  filter(Year == 2021 & Org.Code == 'RX6')
-  #
-  ### Convert the numerical columns to numerical data from strings
-  ## Unlist: https://www.statology.org/r-list-object-cannot-be-coerced-to-type-double/
-  #selData[,6:ncol(selData)] <- as.numeric(unlist(selData[,6:ncol(selData)]))
-  #
-  ### Convert the filtered dataset into long format
-  #selDataL <- selData %>% 
-  #  pivot_longer(cols = 6:ncol(selData), names_to = 'Field', values_to = 'Values')
-  #
-  ### Sort the filtered long dataset on the Field name as character so that goes A8, A9, A10
-  ###    instead of A10, A11... A8, A9.
-  ## https://stackoverflow.com/questions/47223286/reordering-ggplot2-barplots-by-a-mixed-character-and-numerical-variable
-  ## https://stackoverflow.com/questions/38931194/warning-when-defining-factor-duplicated-levels-in-factors-are-deprecated
-  #selDataL$Field <- factor(selDataL$Field, levels = unique(mixedsort(as.character(selDataL$Field))))
-  #
-  #
-  #
-  #
-  ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Graph outputs using functions
-  #
-  ## Point - Call answer times by month
-  #rendPointGsub(selDataL, 'Month', 'Values', 'Field', c('A3', 'A4', 'A114', 'A5', 'A6')) + 
-  #  labs(title = 'Call answer times',
-  #       subtitle = str_to_title(selDataL$Org.Name),
-  #       x = 'Month',
-  #       y = 'Seconds')
-  #
-  # LINE - Number of calls answered by month
- 
-#   rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A1')) + 
-#    labs(title = 'Number of calls answered',
-#         subtitle = str_to_title(selDataL$Org.Name),
-#         x = 'Month',
-#         y = 'Count of calls answered')
-##
-  ## LINE - Number of incidents per category by month
-  #rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12')) + 
-  #  labs(title = 'Number of incidents per category by month',
-  #       subtitle = str_to_title(selDataL$Org.Name),
-  #       x = 'Month',
-  #       y = 'Count of incidents')
-  #
-  ## LINE - Mean response time per category by month
-  #rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A25', 'A31', 'A34', 'A37')) +
-  #  labs(title = 'Mean response time per category by month',
-  #       subtitle = str_to_title(selDataL$Org.Name),
-  #       x = 'Month',
-  #       y = 'Mean response time (sec)')
-  #
-  ## LINE - 90th centile response time per category by month
-  #rendLineGsub(selDataL, 'Month', 'Values', 'Field', c('A26', 'A32', 'A35', 'A38')) +
-  #  labs(title = '90th centile response time per category by month',
-  #       subtitle = str_to_title(selDataL$Org.Name),
-  #       x = 'Month',
-  #       y = '90th centile response time (sec)')
-  #
-  ## COLUMN - Number of incidents per category by month
-  #rendColGsub(selDataL, 'Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12')) + 
-  #  labs(title = 'Number of incidents per category by month',
-  #       subtitle = str_to_title(selDataL$Org.Name),
-  #       x = 'Month',
-  #       y = 'Count of incidents')
-  #
-  ## COLUMN PROPORTION - Proportion of incidents per category by month
-  #rendPropColGsub(selDataL, 'Month', 'Values', 'Field', c('A8', 'A10', 'A11', 'A12')) + 
-  #  labs(title = 'Number of incidents per category by month',
-  #       subtitle = str_to_title(selDataL$Org.Name),
-  #       x = 'Month',
-  #       y = 'Percentage of incidents (%)')
-  #
-  ## COLUMN PROPORTION - Proportion of Face-to-Face / No Face-to-Face responses
-  #rendPropColGsub(selDataL, 'Month', 'Values', 'Field', c('A56', 'A17')) + 
-  #  labs(title = 'Proportion of Face-to-Face / No Face-to-Face responses',
-  #       subtitle = str_to_title(selDataL$Org.Name),
-  #       x = 'Month',
-  #       y = 'Percentage (%)')
-  #
 })
