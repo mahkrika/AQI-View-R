@@ -48,8 +48,8 @@ sidebar <-   dashboardSidebar(
     #menuItem('Calls Answered - Counts', tabName = 'callAns', icon = icon('phone')),
     #menuItem('Calls Answered - Times', tabName = 'callAnsTime', icon = icon('phone')),
     menuItem('Call Answering', tabName = 'callAns', icon = icon('phone')),
-    menuItem('Incidents - Counts', tabName = 'incsCounts', icon = icon('ambulance'))
-    
+    menuItem('Incidents - Counts', tabName = 'incsCounts', icon = icon('ambulance')),
+    menuItem('Incidents - Response Times', tabName = 'incsRTs', icon = icon('shipping-fast'))
     
   )
 )
@@ -76,6 +76,47 @@ body <- dashboardBody(
                      ),
             p(''),
             fluidRow(column(12,tableOutput('incsCatTbl'))
+            )
+    ),
+    # to resolve height overlap: https://stackoverflow.com/questions/46259208/shiny-dashboard-mainpanel-height-issue
+    tabItem(tabName = 'incsRTs',
+            fluidRow(
+              tabBox(
+                width = 12,
+                height = NULL,
+                side = 'right',
+                title = tagList(shiny::icon('shipping-fast'), 'Response Times'),
+                selected = 'C1',
+                id = "tabsetRTs", #height = "250px",
+                tabPanel('C4', 'C4 Response Times',
+                         fluidRow(column(6, plotOutput('C4RTMean')),
+                                  column(6, plotOutput('C4RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('C4RTTbl')))
+                         ),
+                tabPanel('C3', 'C3 Response Times',
+                         fluidRow(column(6, plotOutput('C3RTMean')),
+                                  column(6, plotOutput('C3RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('C3RTTbl')))
+                ),
+                tabPanel('C2', 'C2 Response Times',
+                         fluidRow(column(6, plotOutput('C2RTMean')),
+                                  column(6, plotOutput('C2RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('C2RTTbl')))
+                ),
+                tabPanel('C1', 'C1 Response Times',
+                         fluidRow(column(6, plotOutput('C1RTMean')),
+                                  column(6, plotOutput('C1RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('C1RTTbl')))
+                )
+              )
             )
     ),
     

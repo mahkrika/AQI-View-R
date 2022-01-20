@@ -114,6 +114,7 @@ shinyServer(function(input, output) {
         geom_line() +
         geom_point() +
         scale_y_continuous(labels = comma) +
+        scale_x_continuous(labels = c(1:12), breaks = c(1:12)) +
         labs(title = useTitle,
              x = useX,
              y = useY
@@ -146,6 +147,7 @@ shinyServer(function(input, output) {
        scale_fill_viridis_d(option = 'C',
                             labels = useFactorNames) +
        scale_y_continuous(labels = comma) +
+       scale_x_continuous(labels = c(1:12), breaks = c(1:12)) +
        labs(title = useTitle,
             x = useX,
             y = useY
@@ -177,6 +179,7 @@ shinyServer(function(input, output) {
                            colour = useFactor)) +
       geom_point() +
       scale_y_continuous(labels = comma) +
+      scale_x_continuous(labels = c(1:12), breaks = c(1:12)) +
       labs(title = useTitle,
            x = useX,
            y = useY
@@ -228,6 +231,7 @@ shinyServer(function(input, output) {
       #scale_fill_hue(direction = -1) +
       
       scale_y_continuous(labels = comma) +
+      scale_x_continuous(labels = c(1:12), breaks = c(1:12)) +
       labs(title = useTitle,
            x = useX,
            y = useY
@@ -285,6 +289,70 @@ shinyServer(function(input, output) {
                                       'C3 incidents',
                                       'C4 incidents'), 2)
    
+   
+   output$C1RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A25'), 
+                                   'Mean Response Time - C1', 'Month', 'Seconds')
+   
+   output$C1RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A26'), 
+                                   '90th Centile Response Time - C1', 'Month', 'Seconds') 
+   
+   output$C1RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A25', 'A26') %>% 
+       mutate(A25 = comma(A25),
+              A26 = comma(A26)) %>% 
+       dplyr::rename('Mean response time: C1' = A25,
+                     '90th centile response time: C1' = A26)
+   }, striped = TRUE) 
+   
+   output$C2RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A31'), 
+                                   'Mean Response Time - C2', 'Month', 'Seconds')
+   
+   output$C2RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A32'), 
+                                   '90th Centile Response Time - C2', 'Month', 'Seconds') 
+   
+   output$C2RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A31', 'A32') %>% 
+       mutate(A31 = comma(A31),
+              A32 = comma(A32)) %>% 
+       dplyr::rename('Mean response time: C2' = A31,
+                     '90th centile response time: C2' = A32)
+   }, striped = TRUE) 
+   
+   output$C3RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A34'), 
+                                   'Mean Response Time - C3', 'Month', 'Seconds')
+   
+   output$C3RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A35'), 
+                                   '90th Centile Response Time - C3', 'Month', 'Seconds') 
+   
+   output$C3RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A34', 'A35') %>% 
+       mutate(A34 = comma(A34),
+              A35 = comma(A35)) %>% 
+       dplyr::rename('Mean response time: C3' = A34,
+                     '90th centile response time: C3' = A35)
+   }, striped = TRUE) 
+   
+   output$C4RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A37'), 
+                                   'Mean Response Time - C4', 'Month', 'Seconds')
+   
+   output$C4RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A38'), 
+                                   '90th Centile Response Time - C4', 'Month', 'Seconds') 
+   
+   output$C4RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A37', 'A38') %>% 
+       mutate(A37 = comma(A37),
+              A38 = comma(A38)) %>% 
+       dplyr::rename('Mean response time: C4' = A37,
+                     '90th centile response time: C4' = A38)
+   }, striped = TRUE) 
    
    output$incsCatTbl <- renderTable({
      selData() %>% 
