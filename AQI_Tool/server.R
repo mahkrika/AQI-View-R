@@ -16,6 +16,7 @@ library(gtools)
 library(stringr)
 library(scales)
 library(hms)
+library(dashboardthemes)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -289,6 +290,35 @@ shinyServer(function(input, output) {
                                       'C3 incidents',
                                       'C4 incidents'), 2)
    
+   output$HCPincsCounts <- rendColGsub('Month', 'Values', 'Field', c('A74', 'A75', 'A76', 'A77'), 
+                                    'Number of Incidents per Category', 'Month', 'Incidents',
+                                    c('HCP Level 1 incidents',
+                                      'HCP Level 2 incidents',
+                                      'HCP Level 3 incidents',
+                                      'HCP Level 4 incidents'), 1)
+   
+   output$HCPincsProps <- rendColGsub('Month', 'Values', 'Field', c('A74', 'A75', 'A76', 'A77'), 
+                                   'Proportion of Category Incidents', 'Month', 'Proportion',
+                                   c('HCP Level 1 incidents',
+                                     'HCP Level 2 incidents',
+                                     'HCP Level 3 incidents',
+                                     'HCP Level 4 incidents'), 2)
+   
+   
+   output$IFTincsCounts <- rendColGsub('Month', 'Values', 'Field', c('A78', 'A79', 'A80', 'A81'), 
+                                       'Number of Incidents per Category', 'Month', 'Incidents',
+                                       c('IFT Level 1 incidents',
+                                         'IFT Level 2 incidents',
+                                         'IFT Level 3 incidents',
+                                         'IFT Level 4 incidents'), 1)
+   
+   output$IFTincsProps <- rendColGsub('Month', 'Values', 'Field', c('A78', 'A79', 'A80', 'A81'), 
+                                      'Proportion of Category Incidents', 'Month', 'Proportion',
+                                      c('IFT Level 1 incidents',
+                                        'IFT Level 2 incidents',
+                                        'IFT Level 3 incidents',
+                                        'IFT Level 4 incidents'), 2)
+   
    
    output$C1RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A25'), 
                                    'Mean Response Time - C1', 'Month', 'Seconds')
@@ -299,11 +329,13 @@ shinyServer(function(input, output) {
    output$C1RTTbl <- renderTable({
      selData() %>% 
        select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
-              'A25', 'A26') %>% 
+              'A25', 'A26', 'A8') %>% 
        mutate(A25 = comma(A25),
-              A26 = comma(A26)) %>% 
+              A26 = comma(A26),
+              A8 = comma(A8)) %>% 
        dplyr::rename('Mean response time: C1' = A25,
-                     '90th centile response time: C1' = A26)
+                     '90th centile response time: C1' = A26,
+                     'C1 incidents' = A8)
    }, striped = TRUE) 
    
    output$C2RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A31'), 
@@ -315,11 +347,13 @@ shinyServer(function(input, output) {
    output$C2RTTbl <- renderTable({
      selData() %>% 
        select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
-              'A31', 'A32') %>% 
+              'A31', 'A32', 'A10') %>% 
        mutate(A31 = comma(A31),
-              A32 = comma(A32)) %>% 
+              A32 = comma(A32),
+              A10 = comma(A10)) %>% 
        dplyr::rename('Mean response time: C2' = A31,
-                     '90th centile response time: C2' = A32)
+                     '90th centile response time: C2' = A32,
+                     'C2 Incidents' = A10)
    }, striped = TRUE) 
    
    output$C3RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A34'), 
@@ -331,11 +365,13 @@ shinyServer(function(input, output) {
    output$C3RTTbl <- renderTable({
      selData() %>% 
        select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
-              'A34', 'A35') %>% 
+              'A34', 'A35', 'A11') %>% 
        mutate(A34 = comma(A34),
-              A35 = comma(A35)) %>% 
+              A35 = comma(A35),
+              A11 = comma(A11)) %>% 
        dplyr::rename('Mean response time: C3' = A34,
-                     '90th centile response time: C3' = A35)
+                     '90th centile response time: C3' = A35,
+                     'C3 Incidents' = A11)
    }, striped = TRUE) 
    
    output$C4RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A37'), 
@@ -347,26 +383,212 @@ shinyServer(function(input, output) {
    output$C4RTTbl <- renderTable({
      selData() %>% 
        select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
-              'A37', 'A38') %>% 
+              'A37', 'A38', 'A12') %>% 
        mutate(A37 = comma(A37),
-              A38 = comma(A38)) %>% 
+              A38 = comma(A38),
+              A12 = comma(A12)) %>% 
        dplyr::rename('Mean response time: C4' = A37,
-                     '90th centile response time: C4' = A38)
+                     '90th centile response time: C4' = A38,
+                     'C4 Incidents' = A12)
    }, striped = TRUE) 
+   
+#   output$incsCatTbl <- renderTable({
+#     selData() %>% 
+#       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+#              'A8', 'A10', 'A11', 'A12') %>% 
+#       mutate(A8 = comma(A8),
+#              A10 = comma(A10),
+#              A11 = comma(A11),
+#              A12 = comma(A12)
+#              ) %>% 
+#       dplyr::rename('C1 Incidents' = A8,
+#                     'C2 Incidents' = A10,
+#                     'C3 Incidents' = A11,
+#                     'C4 Incidents' = A12)
+#   }, striped = TRUE)
    
    output$incsCatTbl <- renderTable({
      selData() %>% 
        select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
               'A8', 'A10', 'A11', 'A12') %>% 
-       mutate(A8 = comma(A8),
-              A10 = comma(A10),
-              A11 = comma(A11),
-              A12 = comma(A12)) %>% 
+       dplyr::group_by(Month) %>% 
+       mutate(C1_Perc = A8 / sum(A8+A10+A11+A12) * 100,
+              C2_Perc = A10 / sum(A8+A10+A11+A12) * 100,
+              C3_Perc = A11 / sum(A8+A10+A11+A12) * 100,
+              C4_Perc = A12 / sum(A8+A10+A11+A12) * 100) %>%
+      
        dplyr::rename('C1 Incidents' = A8,
                      'C2 Incidents' = A10,
                      'C3 Incidents' = A11,
-                     'C4 Incidents' = A12)
+                     'C4 Incidents' = A12,
+                     'C1 Incidents %' = C1_Perc,
+                     'C2 Incidents %' = C2_Perc,
+                     'C3 Incidents %' = C3_Perc,
+                     'C4 Incidents %' = C4_Perc)
    }, striped = TRUE)
+   
+   
+   output$incsHCPTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A74', 'A75', 'A76', 'A77') %>% 
+       dplyr::group_by(Month) %>% 
+       mutate(HCP1_Perc = A74 / sum(A74+A75+A76+A77) * 100,
+              HCP2_Perc = A75 / sum(A74+A75+A76+A77) * 100,
+              HCP3_Perc = A76 / sum(A74+A75+A76+A77) * 100,
+              HCP4_Perc = A77 / sum(A74+A75+A76+A77) * 100) %>%
+       
+       dplyr::rename('HCP Level 1 Incidents' = A74,
+                     'HCP Level 2 Incidents' = A75,
+                     'HCP Level 3 Incidents' = A76,
+                     'HCP Level 4 Incidents' = A77,
+                     'HCP Level 1 Incidents %' = HCP1_Perc,
+                     'HCP Level 2 Incidents %' = HCP2_Perc,
+                     'HCP Level 3 Incidents %' = HCP3_Perc,
+                     'HCP Level 4 Incidents %' = HCP4_Perc)
+   }, striped = TRUE)
+
+   output$HCP1RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A83'), 
+                                     'Mean Response Time - HCP Level 1', 'Month', 'Seconds')
+   
+   output$HCP1RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A84'), 
+                                     '90th Centile Response Time - HCP Level 1', 'Month', 'Seconds') 
+   
+   output$HCP1RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A83', 'A84', 'A74') %>% 
+       dplyr::rename('Mean response time: HCP Level 1' = A83,
+                     '90th centile response time: HCP Level 1' = A84,
+                     'HCP Level 1 Incidents' = A74)
+   }, striped = TRUE) 
+   
+   output$HCP2RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A86'), 
+                                     'Mean Response Time - HCP Level 2', 'Month', 'Seconds')
+   
+   output$HCP2RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A87'), 
+                                     '90th Centile Response Time - HCP Level 2', 'Month', 'Seconds') 
+   
+   output$HCP2RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A86', 'A87', 'A75') %>% 
+       dplyr::rename('Mean response time: HCP Level 2' = A86,
+                     '90th centile response time: HCP Level 2' = A87,
+                     'HCP Level 2 Incidents' = A75)
+   }, striped = TRUE) 
+   
+   output$HCP3RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A89'), 
+                                     'Mean Response Time - HCP Level 3', 'Month', 'Seconds')
+   
+   output$HCP3RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A90'), 
+                                     '90th Centile Response Time - HCP Level 3', 'Month', 'Seconds') 
+   
+   output$HCP3RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A89', 'A90', 'A76') %>% 
+       dplyr::rename('Mean response time: HCP Level 3' = A89,
+                     '90th centile response time: HCP Level 3' = A90,
+                     'HCP Level 3 Incidents' = A76)
+   }, striped = TRUE) 
+   
+   output$HCP4RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A92'), 
+                                   'Mean Response Time - HCP Level 4', 'Month', 'Seconds')
+   
+   output$HCP4RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A93'), 
+                                   '90th Centile Response Time - HCP Level 4', 'Month', 'Seconds') 
+   
+   output$HCP4RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A92', 'A93', 'A77') %>% 
+       dplyr::rename('Mean response time: HCP Level 4' = A92,
+                     '90th centile response time: HCP Level 4' = A93,
+                     'HCP Level 4 Incidents' = A77)
+   }, striped = TRUE) 
+   
+   output$incsLFTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A78', 'A79', 'A80', 'A81') %>% 
+       dplyr::group_by(Month) %>% 
+       mutate(LFT1_Perc = A78 / sum(A78+A79+A80+A81) * 100,
+              LFT2_Perc = A79 / sum(A78+A79+A80+A81) * 100,
+              LFT3_Perc = A80 / sum(A78+A79+A80+A81) * 100,
+              LFT4_Perc = A81 / sum(A78+A79+A80+A81) * 100) %>%
+       
+       dplyr::rename('LFT Level 1 Incidents' = A78,
+                     'LFT Level 2 Incidents' = A79,
+                     'LFT Level 3 Incidents' = A80,
+                     'LFT Level 4 Incidents' = A81,
+                     'LFT Level 1 Incidents %' = LFT1_Perc,
+                     'LFT Level 2 Incidents %' = LFT2_Perc,
+                     'LFT Level 3 Incidents %' = LFT3_Perc,
+                     'LFT Level 4 Incidents %' = LFT4_Perc)
+   }, striped = TRUE)
+   
+   
+   output$IFT1RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A95'), 
+                                     'Mean Response Time - IFT Level 1', 'Month', 'Seconds')
+   
+   output$IFT1RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A96'), 
+                                     '90th Centile Response Time - IFT Level 1', 'Month', 'Seconds') 
+   
+   output$IFT1RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A95', 'A96', 'A78') %>% 
+       dplyr::rename('Mean response time: IFT Level 1' = A95,
+                     '90th centile response time: IFT Level 1' = A96,
+                     'IFT Level 1 Incidents' = A78)
+   }, striped = TRUE) 
+   
+   output$IFT2RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A98'), 
+                                     'Mean Response Time - IFT Level 2', 'Month', 'Seconds')
+   
+   output$IFT2RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A99'), 
+                                     '90th Centile Response Time - IFT Level 2', 'Month', 'Seconds') 
+   
+   output$IFT2RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A98', 'A99', 'A79') %>% 
+       dplyr::rename('Mean response time: IFT Level 2' = A98,
+                     '90th centile response time: IFT Level 2' = A99,
+                     'IFT Level 2 Incidents' = A79)
+   }, striped = TRUE) 
+   
+   output$IFT3RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A101'), 
+                                     'Mean Response Time - IFT Level 3', 'Month', 'Seconds')
+   
+   output$IFT3RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A102'), 
+                                     '90th Centile Response Time - IFT Level 3', 'Month', 'Seconds') 
+   
+   output$IFT3RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A101', 'A102', 'A80') %>% 
+       dplyr::rename('Mean response time: IFT Level 3' = A101,
+                     '90th centile response time: IFT Level 3' = A102,
+                     'IFT Level 3 Incidents' = A80)
+   }, striped = TRUE) 
+   
+   output$IFT4RTMean <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A104'), 
+                                     'Mean Response Time - IFT Level 4', 'Month', 'Seconds')
+   
+   output$IFT4RT90th <- rendLineGsub('Month', 'Values', 'Field_Detail', c('A105'), 
+                                     '90th Centile Response Time - IFT Level 4', 'Month', 'Seconds') 
+   
+   output$IFT4RTTbl <- renderTable({
+     selData() %>% 
+       select('Year', 'Month', 'Region', 'Org.Code', 'Org.Name', 
+              'A104', 'A105', 'A81') %>% 
+       dplyr::rename('Mean response time: IFT Level 4' = A104,
+                     '90th centile response time: IFT Level 4' = A105,
+                     'IFT Level 4 Incidents' = A81)
+   }, striped = TRUE) 
+   
    
  
    output$callAnsTbl <- renderTable({

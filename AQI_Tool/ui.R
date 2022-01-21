@@ -17,6 +17,7 @@ library(gtools)
 library(stringr)
 library(scales)
 library(hms)
+library(dashboardthemes)
 
 year <- c('2021', '2020', '2019', '2018')
 manualOrgs <- c('England', 'North East and Yorkshire', 'North West', 'Midlands', 'East of England', 'London',
@@ -49,12 +50,19 @@ sidebar <-   dashboardSidebar(
     #menuItem('Calls Answered - Times', tabName = 'callAnsTime', icon = icon('phone')),
     menuItem('Call Answering', tabName = 'callAns', icon = icon('phone')),
     menuItem('Incidents - Counts', tabName = 'incsCounts', icon = icon('ambulance')),
-    menuItem('Incidents - Response Times', tabName = 'incsRTs', icon = icon('shipping-fast'))
+    menuItem('Incidents - Response Times', tabName = 'incsRTs', icon = icon('shipping-fast')),
+    menuItem('HCP - Counts', tabName = 'hcpCounts', icon = icon('ambulance')),
+    menuItem('HCP - Response Times', tabName = 'hcpRTs', icon = icon('shipping-fast')),
+    menuItem('IFT - Counts', tabName = 'iftCounts', icon = icon('ambulance')),
+    menuItem('IFT - Response Times', tabName = 'iftRTs', icon = icon('shipping-fast'))
     
   )
 )
 
 body <- dashboardBody(
+  shinyDashboardThemes(
+    theme = "flat_red"
+  ),
   tabItems(
     
     tabItem(tabName = 'callAns',
@@ -119,6 +127,126 @@ body <- dashboardBody(
               )
             )
     ),
+    
+    
+    
+    
+    
+    
+    
+    tabItem(tabName = 'hcpCounts',
+            h2('Incident Counts'),
+            p('This page details elements of incidents by category:'),
+            fluidRow(column(6, plotOutput('HCPincsCounts')),
+                     column(6, plotOutput('HCPincsProps'))
+            ),
+            p(''),
+            fluidRow(column(12,tableOutput('incsHCPTbl'))
+            )
+    ),
+    
+    
+    tabItem(tabName = 'hcpRTs',
+            fluidRow(
+              tabBox(
+                width = 12,
+                height = NULL,
+                side = 'right',
+                title = tagList(shiny::icon('shipping-fast'), 'Response Times'),
+                selected = 'HCP Level 1',
+                id = "tabsetRTs", #height = "250px",
+                tabPanel('HCP Level 4', 'HCP Level 4 Response Times',
+                         fluidRow(column(6, plotOutput('HCP4RTMean')),
+                                  column(6, plotOutput('HCP4RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('HCP4RTTbl')))
+                ),
+                tabPanel('HCP Level 3', 'HCP Level 3 Response Times',
+                         fluidRow(column(6, plotOutput('HCP3RTMean')),
+                                  column(6, plotOutput('HCP3RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('HCP3RTTbl')))
+                ),
+                tabPanel('HCP Level 2', 'HCP Level 2 Response Times',
+                         fluidRow(column(6, plotOutput('HCP2RTMean')),
+                                  column(6, plotOutput('HCP2RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('HCP2RTTbl')))
+                ),
+                tabPanel('HCP Level 1', 'HCP Level 1 Response Times',
+                         fluidRow(column(6, plotOutput('HCP1RTMean')),
+                                  column(6, plotOutput('HCP1RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('HCP1RTTbl')))
+                )
+              )
+            )
+    ),
+    
+    
+    
+    
+    
+    
+    
+    tabItem(tabName = 'iftCounts',
+            h2('Incident Counts'),
+            p('This page details elements of incidents by category:'),
+            fluidRow(column(6, plotOutput('IFTincsCounts')),
+                     column(6, plotOutput('IFTincsProps'))
+            ),
+            p(''),
+            fluidRow(column(12,tableOutput('incsLFTTbl'))
+            )
+    ),
+    
+    tabItem(tabName = 'iftRTs',
+            fluidRow(
+              tabBox(
+                width = 12,
+                height = NULL,
+                side = 'right',
+                title = tagList(shiny::icon('shipping-fast'), 'Response Times'),
+                selected = 'IFT Level 1',
+                id = "tabsetRTs", #height = "250px",
+                tabPanel('IFT Level 4', 'IFT Level 4 Response Times',
+                         fluidRow(column(6, plotOutput('IFT4RTMean')),
+                                  column(6, plotOutput('IFT4RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('IFT4RTTbl')))
+                ),
+                tabPanel('IFT Level 3', 'IFT Level 3 Response Times',
+                         fluidRow(column(6, plotOutput('IFT3RTMean')),
+                                  column(6, plotOutput('IFT3RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('IFT3RTTbl')))
+                ),
+                tabPanel('IFT Level 2', 'IFT Level 2 Response Times',
+                         fluidRow(column(6, plotOutput('IFT2RTMean')),
+                                  column(6, plotOutput('IFT2RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('IFT2RTTbl')))
+                ),
+                tabPanel('IFT Level 1', 'IFT Level 1 Response Times',
+                         fluidRow(column(6, plotOutput('IFT1RTMean')),
+                                  column(6, plotOutput('IFT1RT90th'))
+                         ),
+                         p(''),
+                         fluidRow(column(12, tableOutput('IFT1RTTbl')))
+                )
+              )
+            )
+    ),
+    
+    
+    
     
     tabItem(tabName = 'about',
             h2('About the AQI View-R'),
